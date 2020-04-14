@@ -11,7 +11,7 @@ ESPPORT		= COM4
 #ESPBAUD		= 256000
 
 # Basic project settings
-MODULES	= driver user
+MODULES	= driver user services
 LIBS	= c gcc hal phy pp net80211 lwip wpa main crypto
 
 # Root includes

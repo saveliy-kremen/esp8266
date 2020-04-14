@@ -8,8 +8,16 @@
 #include "../driver/uart.h"
 #include "user_config.h"
 
+#include "../services/esp8266.pb.h"
+#include "../services/pb_common.h"
+#include "../services/pb.h"
+#include "../services/pb_encode.h"
+#include "../services/pb_decode.h"
+
 static char macaddr[6];
 static ETSTimer WiFiLinker;
+uint8_t buffer[128];
+size_t message_length;
 
 //Обязательная функция!
    uint32 ICACHE_FLASH_ATTR user_rf_cal_sector_set(void)
@@ -76,14 +84,25 @@ static ETSTimer WiFiLinker;
 		espconn_regist_sentcb(pespconn, at_tcpclient_sent_cb);
 		// callback функция, вызываемая после отключения
 		espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
-		char payload[128];
-		// Подготавливаем строку данных, будем отправлять MAC адрес ESP8266 в режиме AP и добавим к нему строку ESP8266
-		os_sprintf(payload, MACSTR ",%s\r\n", MAC2STR(macaddr), "ESP8266");
-		#ifdef PLATFORM_DEBUG
-		ESPOOLITE_LOGGING(payload);
-		#endif
-		// Отправляем данные
-		espconn_sent(pespconn, payload, strlen(payload));
+
+		uint16 adc = system_adc_read();
+		ESPOOLITE_LOGGING("%d\r\n", adc );
+		v1_DataRequest request = v1_DataRequest_init_zero;
+		request.adc = adc;
+		pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
+		bool status = pb_encode(&stream, v1_DataRequest_fields, &request);
+		message_length = stream.bytes_written;
+		if (!status) {
+			ESPOOLITE_LOGGING("Failed to encode");
+		} else {
+			ESPOOLITE_LOGGING("%d\r\n", message_length);
+			int i;
+			for(i = 0; i<message_length; i++) {
+				ESPOOLITE_LOGGING("%02X", buffer[i]);
+			}
+			ESPOOLITE_LOGGING("\r\n");
+			espconn_sent(pespconn, buffer, message_length);
+		}
 	}
 
 	static void ICACHE_FLASH_ATTR
