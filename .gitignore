@@ -1,2 +1,9 @@
 /build/
 /firmware/
+build/app.out
+build/app_app.a
+build/driver/uart.o
+build/user/user_main.o
+build/user/wifi.o
+firmware/eagle.flash.bin
+firmware/eagle.irom0text.bin
