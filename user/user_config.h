@@ -1,6 +1,6 @@
 #define WIFI_SSID		"awl"
 #define WIFI_PASSWORD	"as123098"
-#define TCPSERVERIP 	"85.159.3.218"
+#define TCPSERVERIP 	"87.244.176.211"
 #define TCPSERVERPORT 	3000
 
 #define PLATFORM_DEBUG

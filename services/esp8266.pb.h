@@ -4,7 +4,6 @@
 #ifndef PB_V1_ESP8266_PB_H_INCLUDED
 #define PB_V1_ESP8266_PB_H_INCLUDED
 #include <pb.h>
-#include "google/protobuf/empty.pb.h"
 
 #if PB_PROTO_HEADER_VERSION != 40
 #error Regenerate this file with the current version of nanopb generator.
@@ -15,46 +14,52 @@ extern "C" {
 #endif
 
 /* Struct definitions */
-typedef struct _v1_DataRequest {
-    uint32_t adc;
-} v1_DataRequest;
+typedef struct _v1_CmdRequest {
+    uint32_t cmd;
+} v1_CmdRequest;
 
-typedef struct _v1_DataResponse {
-    int32_t status;
-} v1_DataResponse;
+typedef struct _v1_DataRequest {
+    uint32_t cmd;
+    uint32_t adc;
+    uint32_t status;
+} v1_DataRequest;
 
 
 /* Initializer values for message structs */
-#define v1_DataRequest_init_default              {0}
-#define v1_DataResponse_init_default             {0}
-#define v1_DataRequest_init_zero                 {0}
-#define v1_DataResponse_init_zero                {0}
+#define v1_DataRequest_init_default              {0, 0, 0}
+#define v1_CmdRequest_init_default               {0}
+#define v1_DataRequest_init_zero                 {0, 0, 0}
+#define v1_CmdRequest_init_zero                  {0}
 
 /* Field tags (for use in manual encoding/decoding) */
-#define v1_DataRequest_adc_tag                   1
-#define v1_DataResponse_status_tag               1
+#define v1_CmdRequest_cmd_tag                    1
+#define v1_DataRequest_cmd_tag                   1
+#define v1_DataRequest_adc_tag                   2
+#define v1_DataRequest_status_tag                3
 
 /* Struct field encoding specification for nanopb */
 #define v1_DataRequest_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, UINT32,   adc,               1)
+X(a, STATIC,   SINGULAR, UINT32,   cmd,               1) \
+X(a, STATIC,   SINGULAR, UINT32,   adc,               2) \
+X(a, STATIC,   SINGULAR, UINT32,   status,            3)
 #define v1_DataRequest_CALLBACK NULL
 #define v1_DataRequest_DEFAULT NULL
 
-#define v1_DataResponse_FIELDLIST(X, a) \
-X(a, STATIC,   SINGULAR, INT32,    status,            1)
-#define v1_DataResponse_CALLBACK NULL
-#define v1_DataResponse_DEFAULT NULL
+#define v1_CmdRequest_FIELDLIST(X, a) \
+X(a, STATIC,   SINGULAR, UINT32,   cmd,               1)
+#define v1_CmdRequest_CALLBACK NULL
+#define v1_CmdRequest_DEFAULT NULL
 
 extern const pb_msgdesc_t v1_DataRequest_msg;
-extern const pb_msgdesc_t v1_DataResponse_msg;
+extern const pb_msgdesc_t v1_CmdRequest_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define v1_DataRequest_fields &v1_DataRequest_msg
-#define v1_DataResponse_fields &v1_DataResponse_msg
+#define v1_CmdRequest_fields &v1_CmdRequest_msg
 
 /* Maximum encoded size of messages (where known) */
-#define v1_DataRequest_size                      6
-#define v1_DataResponse_size                     11
+#define v1_DataRequest_size                      18
+#define v1_CmdRequest_size                       6
 
 #ifdef __cplusplus
 } /* extern "C" */

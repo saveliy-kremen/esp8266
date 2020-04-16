@@ -14,14 +14,14 @@
 #include "../services/pb_encode.h"
 #include "../services/pb_decode.h"
 
-static char macaddr[6];
 static ETSTimer WiFiLinker;
 uint8_t buffer[128];
+uint8_t receive_buffer[128];
 size_t message_length;
+struct espconn *pespconn;
 
 //Обязательная функция!
-   uint32 ICACHE_FLASH_ATTR user_rf_cal_sector_set(void)
-   {
+   uint32 ICACHE_FLASH_ATTR user_rf_cal_sector_set(void) {
     enum flash_size_map size_map = system_get_flash_size_map();
     uint32 rf_cal_sec = 0;
     switch (size_map)
@@ -58,33 +58,32 @@ size_t message_length;
 		ESPOOLITE_LOGGING("Send callback\r\n");
 		#endif
 		// Данные отправлены, отключаемся от TCP-сервера
-		struct espconn *pespconn = (struct espconn *)arg;
-		espconn_disconnect(pespconn);
+		//struct espconn *pespconn = (struct espconn *)arg;
+		//espconn_disconnect(pespconn);
+	}
+
+	static void ICACHE_FLASH_ATTR at_tcpclient_recv(void * arg, char * buf, unsigned short len) {
+		ESPOOLITE_LOGGING("Receive callback\r\n");
+		ESPOOLITE_LOGGING("%d\r\n", len);
+		int i;
+		for(i = 0; i<len; i++) {
+			ESPOOLITE_LOGGING("%02X", buf[i]);
+		}
+		/*
+		v1_CmdRequest request = v1_CmdRequest_init_zero;
+		pb_istream_t stream = pb_istream_from_buffer(receive_buffer, len);
+		bool status = pb_decode(&stream, v1_CmdRequest_fields, buf);
+		if (!status) {
+			ESPOOLITE_LOGGING("Decoding failed: %s\n", PB_GET_ERROR(&stream));
+			return;
+		} else {
+			ESPOOLITE_LOGGING("Your lucky number was %d!\n", (int)request.cmd);
+		}
+		*/
 	}
 
 	static void ICACHE_FLASH_ATTR
-	at_tcpclient_discon_cb(void *arg) {
-		struct espconn *pespconn = (struct espconn *)arg;
-		// Отключились, освобождаем память
-		os_free(pespconn->proto.tcp);
-		os_free(pespconn);
-		#ifdef PLATFORM_DEBUG
-		ESPOOLITE_LOGGING("Disconnect callback\r\n");
-		#endif
-	}
-
-	static void ICACHE_FLASH_ATTR
-	at_tcpclient_connect_cb(void *arg)
-	{
-		struct espconn *pespconn = (struct espconn *)arg;
-		#ifdef PLATFORM_DEBUG
-		ESPOOLITE_LOGGING("TCP client connect\r\n");
-		#endif
-		// callback функция, вызываемая после отправки данных
-		espconn_regist_sentcb(pespconn, at_tcpclient_sent_cb);
-		// callback функция, вызываемая после отключения
-		espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
-
+	send_data()	{
 		uint16 adc = system_adc_read();
 		ESPOOLITE_LOGGING("%d\r\n", adc );
 		v1_DataRequest request = v1_DataRequest_init_zero;
@@ -106,8 +105,33 @@ size_t message_length;
 	}
 
 	static void ICACHE_FLASH_ATTR
-	senddata()
-	{
+	at_tcpclient_discon_cb(void *arg) {
+		pespconn = arg;
+		// Отключились, освобождаем память
+		os_free(pespconn->proto.tcp);
+		os_free(pespconn);
+		#ifdef PLATFORM_DEBUG
+		ESPOOLITE_LOGGING("Disconnect callback\r\n");
+		#endif
+		pespconn = NULL;
+	}
+
+	static void ICACHE_FLASH_ATTR
+	at_tcpclient_connect_cb(void *arg) {
+		pespconn = arg;
+		#ifdef PLATFORM_DEBUG
+		ESPOOLITE_LOGGING("TCP client connect\r\n");
+		#endif
+		// callback функция, вызываемая после отправки данных
+		espconn_regist_sentcb(pespconn, at_tcpclient_sent_cb);
+		// callback функция, вызываемая после приема данных
+		espconn_regist_recvcb(pespconn, at_tcpclient_recv);
+		// callback функция, вызываемая после отключения
+		espconn_regist_disconcb(pespconn, at_tcpclient_discon_cb);
+	}
+
+	static void ICACHE_FLASH_ATTR
+	connect_tcp() {
 		char info[150];
 		char tcpserverip[15];
 		struct espconn *pCon = (struct espconn *)os_zalloc(sizeof(struct espconn));
@@ -143,19 +167,20 @@ size_t message_length;
 		espconn_connect(pCon);
 	}
 
-	static void ICACHE_FLASH_ATTR timer(void *arg)
-	{
+	static void ICACHE_FLASH_ATTR timer(void *arg) {
 		// Отключаем таймер проверки wi-fi
 		os_timer_disarm(&WiFiLinker);
+		if (pespconn != NULL) {
+			send_data();
+		}
 		if (wifi_check_ip() == TCP_CONNECTING) {
-			senddata();
+			connect_tcp();
 		}
 		os_timer_setfn(&WiFiLinker, (os_timer_func_t *)timer, NULL);
 		os_timer_arm(&WiFiLinker, 1000, 0);
 	}
 
-	void ICACHE_FLASH_ATTR user_init(void)
-	{
+	void ICACHE_FLASH_ATTR user_init(void) {
 		uart_init(BIT_RATE_115200, BIT_RATE_115200);
 		os_delay_us(1000);
 		setup_wifi_st_mode();
@@ -164,6 +189,5 @@ size_t message_length;
 		os_timer_disarm(&WiFiLinker);
 		os_timer_setfn(&WiFiLinker, (os_timer_func_t *)timer, NULL);
 		os_timer_arm(&WiFiLinker, 1000, 0);
-
 	}
 

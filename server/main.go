@@ -62,6 +62,16 @@ func handleConnection(conn net.Conn) {
 		log.Println("failed to unmarshal:", err)
 		return
 	}
-
 	spew.Dump(e)
+
+	buf = []byte{1, 2, 3}
+	n, err = conn.Write(buf)
+	if err != nil {
+		log.Println(err)
+		return
+	}
+	if n <= 0 {
+		log.Println("no data transmit")
+		return
+	}
 }

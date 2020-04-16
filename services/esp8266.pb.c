@@ -9,7 +9,7 @@
 PB_BIND(v1_DataRequest, v1_DataRequest, AUTO)
 
 
-PB_BIND(v1_DataResponse, v1_DataResponse, AUTO)
+PB_BIND(v1_CmdRequest, v1_CmdRequest, AUTO)
 
 
 

@@ -4,14 +4,10 @@
 package v1
 
 import (
-	context "context"
 	fmt "fmt"
-	proto "github.com/golang/protobuf/proto"
-	_ "github.com/golang/protobuf/ptypes/empty"
-	grpc "google.golang.org/grpc"
-	codes "google.golang.org/grpc/codes"
-	status "google.golang.org/grpc/status"
 	math "math"
+
+	proto "github.com/golang/protobuf/proto"
 )
 
 // Reference imports to suppress errors if they are not otherwise used.
@@ -26,7 +22,9 @@ var _ = math.Inf
 const _ = proto.ProtoPackageIsVersion3 // please upgrade the proto package
 
 type DataRequest struct {
-	Adc                  uint32   `protobuf:"varint,1,opt,name=adc,proto3" json:"adc,omitempty"`
+	Cmd                  uint32   `protobuf:"varint,1,opt,name=cmd,proto3" json:"cmd,omitempty"`
+	Adc                  uint32   `protobuf:"varint,2,opt,name=adc,proto3" json:"adc,omitempty"`
+	Status               uint32   `protobuf:"varint,3,opt,name=status,proto3" json:"status,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`
 	XXX_unrecognized     []byte   `json:"-"`
 	XXX_sizecache        int32    `json:"-"`
@@ -57,6 +55,13 @@ func (m *DataRequest) XXX_DiscardUnknown() {
 
 var xxx_messageInfo_DataRequest proto.InternalMessageInfo
 
+func (m *DataRequest) GetCmd() uint32 {
+	if m != nil {
+		return m.Cmd
+	}
+	return 0
+}
+
 func (m *DataRequest) GetAdc() uint32 {
 	if m != nil {
 		return m.Adc
@@ -64,48 +69,55 @@ func (m *DataRequest) GetAdc() uint32 {
 	return 0
 }
 
-type DataResponse struct {
-	Status               int32    `protobuf:"varint,1,opt,name=status,proto3" json:"status,omitempty"`
-	XXX_NoUnkeyedLiteral struct{} `json:"-"`
-	XXX_unrecognized     []byte   `json:"-"`
-	XXX_sizecache        int32    `json:"-"`
-}
-
-func (m *DataResponse) Reset()         { *m = DataResponse{} }
-func (m *DataResponse) String() string { return proto.CompactTextString(m) }
-func (*DataResponse) ProtoMessage()    {}
-func (*DataResponse) Descriptor() ([]byte, []int) {
-	return fileDescriptor_73b2e4f11179e21f, []int{1}
-}
-
-func (m *DataResponse) XXX_Unmarshal(b []byte) error {
-	return xxx_messageInfo_DataResponse.Unmarshal(m, b)
-}
-func (m *DataResponse) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
-	return xxx_messageInfo_DataResponse.Marshal(b, m, deterministic)
-}
-func (m *DataResponse) XXX_Merge(src proto.Message) {
-	xxx_messageInfo_DataResponse.Merge(m, src)
-}
-func (m *DataResponse) XXX_Size() int {
-	return xxx_messageInfo_DataResponse.Size(m)
-}
-func (m *DataResponse) XXX_DiscardUnknown() {
-	xxx_messageInfo_DataResponse.DiscardUnknown(m)
-}
-
-var xxx_messageInfo_DataResponse proto.InternalMessageInfo
-
-func (m *DataResponse) GetStatus() int32 {
+func (m *DataRequest) GetStatus() uint32 {
 	if m != nil {
 		return m.Status
 	}
 	return 0
 }
 
+type CmdRequest struct {
+	Cmd                  uint32   `protobuf:"varint,1,opt,name=cmd,proto3" json:"cmd,omitempty"`
+	XXX_NoUnkeyedLiteral struct{} `json:"-"`
+	XXX_unrecognized     []byte   `json:"-"`
+	XXX_sizecache        int32    `json:"-"`
+}
+
+func (m *CmdRequest) Reset()         { *m = CmdRequest{} }
+func (m *CmdRequest) String() string { return proto.CompactTextString(m) }
+func (*CmdRequest) ProtoMessage()    {}
+func (*CmdRequest) Descriptor() ([]byte, []int) {
+	return fileDescriptor_73b2e4f11179e21f, []int{1}
+}
+
+func (m *CmdRequest) XXX_Unmarshal(b []byte) error {
+	return xxx_messageInfo_CmdRequest.Unmarshal(m, b)
+}
+func (m *CmdRequest) XXX_Marshal(b []byte, deterministic bool) ([]byte, error) {
+	return xxx_messageInfo_CmdRequest.Marshal(b, m, deterministic)
+}
+func (m *CmdRequest) XXX_Merge(src proto.Message) {
+	xxx_messageInfo_CmdRequest.Merge(m, src)
+}
+func (m *CmdRequest) XXX_Size() int {
+	return xxx_messageInfo_CmdRequest.Size(m)
+}
+func (m *CmdRequest) XXX_DiscardUnknown() {
+	xxx_messageInfo_CmdRequest.DiscardUnknown(m)
+}
+
+var xxx_messageInfo_CmdRequest proto.InternalMessageInfo
+
+func (m *CmdRequest) GetCmd() uint32 {
+	if m != nil {
+		return m.Cmd
+	}
+	return 0
+}
+
 func init() {
 	proto.RegisterType((*DataRequest)(nil), "v1.DataRequest")
-	proto.RegisterType((*DataResponse)(nil), "v1.DataResponse")
+	proto.RegisterType((*CmdRequest)(nil), "v1.CmdRequest")
 }
 
 func init() {
@@ -113,96 +125,13 @@ func init() {
 }
 
 var fileDescriptor_73b2e4f11179e21f = []byte{
-	// 167 bytes of a gzipped FileDescriptorProto
+	// 116 bytes of a gzipped FileDescriptorProto
 	0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x02, 0xff, 0xe2, 0xe2, 0x4d, 0x2d, 0x2e, 0xb0,
-	0x30, 0x32, 0x33, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2a, 0x33, 0x94, 0x92, 0x4e,
-	0xcf, 0xcf, 0x4f, 0xcf, 0x49, 0xd5, 0x07, 0x8b, 0x24, 0x95, 0xa6, 0xe9, 0xa7, 0xe6, 0x16, 0x94,
-	0x54, 0x42, 0x14, 0x28, 0xc9, 0x73, 0x71, 0xbb, 0x24, 0x96, 0x24, 0x06, 0xa5, 0x16, 0x96, 0xa6,
-	0x16, 0x97, 0x08, 0x09, 0x70, 0x31, 0x27, 0xa6, 0x24, 0x4b, 0x30, 0x2a, 0x30, 0x6a, 0xf0, 0x06,
-	0x81, 0x98, 0x4a, 0x6a, 0x5c, 0x3c, 0x10, 0x05, 0xc5, 0x05, 0xf9, 0x79, 0xc5, 0xa9, 0x42, 0x62,
-	0x5c, 0x6c, 0xc5, 0x25, 0x89, 0x25, 0xa5, 0xc5, 0x60, 0x45, 0xac, 0x41, 0x50, 0x9e, 0x91, 0x3d,
-	0x17, 0x9f, 0x2b, 0xc4, 0xea, 0xe0, 0xd4, 0xa2, 0xb2, 0xcc, 0xe4, 0x54, 0x21, 0x5d, 0x2e, 0x8e,
-	0xe0, 0xd4, 0xbc, 0x14, 0x90, 0x6e, 0x21, 0x7e, 0xbd, 0x32, 0x43, 0x3d, 0x24, 0x8b, 0xa4, 0x04,
-	0x10, 0x02, 0x10, 0x83, 0x93, 0xd8, 0xc0, 0x0e, 0x32, 0x06, 0x04, 0x00, 0x00, 0xff, 0xff, 0x30,
-	0x91, 0x6f, 0xe7, 0xc2, 0x00, 0x00, 0x00,
-}
-
-// Reference imports to suppress errors if they are not otherwise used.
-var _ context.Context
-var _ grpc.ClientConnInterface
-
-// This is a compile-time assertion to ensure that this generated file
-// is compatible with the grpc package it is being compiled against.
-const _ = grpc.SupportPackageIsVersion6
-
-// Esp8266ServiceClient is the client API for Esp8266Service service.
-//
-// For semantics around ctx use and closing/ending streaming RPCs, please refer to https://godoc.org/google.golang.org/grpc#ClientConn.NewStream.
-type Esp8266ServiceClient interface {
-	SendData(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*DataResponse, error)
-}
-
-type esp8266ServiceClient struct {
-	cc grpc.ClientConnInterface
-}
-
-func NewEsp8266ServiceClient(cc grpc.ClientConnInterface) Esp8266ServiceClient {
-	return &esp8266ServiceClient{cc}
-}
-
-func (c *esp8266ServiceClient) SendData(ctx context.Context, in *DataRequest, opts ...grpc.CallOption) (*DataResponse, error) {
-	out := new(DataResponse)
-	err := c.cc.Invoke(ctx, "/v1.Esp8266Service/SendData", in, out, opts...)
-	if err != nil {
-		return nil, err
-	}
-	return out, nil
-}
-
-// Esp8266ServiceServer is the server API for Esp8266Service service.
-type Esp8266ServiceServer interface {
-	SendData(context.Context, *DataRequest) (*DataResponse, error)
-}
-
-// UnimplementedEsp8266ServiceServer can be embedded to have forward compatible implementations.
-type UnimplementedEsp8266ServiceServer struct {
-}
-
-func (*UnimplementedEsp8266ServiceServer) SendData(ctx context.Context, req *DataRequest) (*DataResponse, error) {
-	return nil, status.Errorf(codes.Unimplemented, "method SendData not implemented")
-}
-
-func RegisterEsp8266ServiceServer(s *grpc.Server, srv Esp8266ServiceServer) {
-	s.RegisterService(&_Esp8266Service_serviceDesc, srv)
-}
-
-func _Esp8266Service_SendData_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
-	in := new(DataRequest)
-	if err := dec(in); err != nil {
-		return nil, err
-	}
-	if interceptor == nil {
-		return srv.(Esp8266ServiceServer).SendData(ctx, in)
-	}
-	info := &grpc.UnaryServerInfo{
-		Server:     srv,
-		FullMethod: "/v1.Esp8266Service/SendData",
-	}
-	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
-		return srv.(Esp8266ServiceServer).SendData(ctx, req.(*DataRequest))
-	}
-	return interceptor(ctx, in, info, handler)
-}
-
-var _Esp8266Service_serviceDesc = grpc.ServiceDesc{
-	ServiceName: "v1.Esp8266Service",
-	HandlerType: (*Esp8266ServiceServer)(nil),
-	Methods: []grpc.MethodDesc{
-		{
-			MethodName: "SendData",
-			Handler:    _Esp8266Service_SendData_Handler,
-		},
-	},
-	Streams:  []grpc.StreamDesc{},
-	Metadata: "esp8266.proto",
+	0x30, 0x32, 0x33, 0xd3, 0x2b, 0x28, 0xca, 0x2f, 0xc9, 0x17, 0x62, 0x2a, 0x33, 0x54, 0xf2, 0xe4,
+	0xe2, 0x76, 0x49, 0x2c, 0x49, 0x0c, 0x4a, 0x2d, 0x2c, 0x4d, 0x2d, 0x2e, 0x11, 0x12, 0xe0, 0x62,
+	0x4e, 0xce, 0x4d, 0x91, 0x60, 0x54, 0x60, 0xd4, 0xe0, 0x0d, 0x02, 0x31, 0x41, 0x22, 0x89, 0x29,
+	0xc9, 0x12, 0x4c, 0x10, 0x91, 0xc4, 0x94, 0x64, 0x21, 0x31, 0x2e, 0xb6, 0xe2, 0x92, 0xc4, 0x92,
+	0xd2, 0x62, 0x09, 0x66, 0xb0, 0x20, 0x94, 0xa7, 0x24, 0xc7, 0xc5, 0xe5, 0x9c, 0x9b, 0x82, 0xd3,
+	0xa4, 0x24, 0x36, 0xb0, 0xad, 0xc6, 0x80, 0x00, 0x00, 0x00, 0xff, 0xff, 0x21, 0xa0, 0x12, 0xfb,
+	0x86, 0x00, 0x00, 0x00,
 }

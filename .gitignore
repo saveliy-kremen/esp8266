@@ -7,3 +7,4 @@ build/user/user_main.o
 build/user/wifi.o
 firmware/eagle.flash.bin
 firmware/eagle.irom0text.bin
+server/.vscode/sftp.json
